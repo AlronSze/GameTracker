@@ -5,928 +5,896 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="游戏发售记录">
-<title>游戏发售记录</title>
+<meta name="apple-mobile-web-app-title" content="GameLog">
+<title>GameLog</title>
 <style>
-  :root {
-    --bg: #0E0F14;
-    --surface: #1A1C26;
-    --surface2: #22253A;
-    --border: #2A2D42;
-    --accent: #7C6FFF;
-    --accent-glow: rgba(124, 111, 255, 0.25);
-    --bought: #4ECDC4;
-    --bought-glow: rgba(78, 205, 196, 0.2);
-    --played: #FFD166;
-    --played-glow: rgba(255, 209, 102, 0.2);
-    --text: #F0F0F5;
-    --text-sub: #6B7080;
-    --text-dim: #404358;
-    --danger: #FF6B6B;
-    --safe: #06d6a0;
-    --radius: 12px;
-    --radius-sm: 8px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: -apple-system, 'SF Pro Display', 'PingFang SC', sans-serif; }
-  
-  /* ── LAYOUT ── */
-  #app { display: flex; flex-direction: column; height: 100vh; height: -webkit-fill-available; overflow: hidden; }
-  
-  /* ── HEADER ── */
-  .header {
-    padding: env(safe-area-inset-top, 12px) 16px 0;
-    padding-top: max(env(safe-area-inset-top), 44px);
-    background: rgba(14,15,20,0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-    z-index: 100;
-    flex-shrink: 0;
-  }
-  .header-top { display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; }
-  .header-title { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
-  .header-title span { color: var(--accent); }
-  .header-actions { display: flex; gap: 8px; }
-  .icon-btn {
-    width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border);
-    background: var(--surface); display: flex; align-items: center; justify-content: center;
-    cursor: pointer; color: var(--text-sub); font-size: 16px; transition: all 0.15s;
-  }
-  .icon-btn:active { background: var(--surface2); transform: scale(0.95); }
-  .icon-btn.accent { background: var(--accent); border-color: var(--accent); color: #fff; }
-  
-  /* ── VIEW TABS ── */
-  .view-tabs { display: flex; gap: 0; padding-bottom: 0; }
-  .tab-btn {
-    flex: 1; padding: 10px 0; font-size: 13px; font-weight: 600; text-align: center;
-    color: var(--text-sub); cursor: pointer; border-bottom: 2px solid transparent;
-    transition: all 0.2s; letter-spacing: 0.2px;
-  }
-  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-  
-  /* ── MAIN CONTENT ── */
-  .content { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
-  
-  /* ── PLAYED VIEW TABS ── */
-  .sub-tabs { display: flex; gap: 8px; padding: 12px 16px 0; }
-  .sub-tab {
-    padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
-    cursor: pointer; border: 1px solid var(--border); color: var(--text-sub); transition: all 0.15s;
-  }
-  .sub-tab.active { background: var(--played); border-color: var(--played); color: #000; }
+:root {
+  --bg:#0E0F14; --sf:#1A1C26; --sf2:#22253A; --bd:#2A2D42;
+  --ac:#7C6FFF; --acg:rgba(124,111,255,.2);
+  --bt:#4ECDC4; --btg:rgba(78,205,196,.15);
+  --pl:#FFD166; --plg:rgba(255,209,102,.15);
+  --tx:#F0F0F5; --sub:#6B7080; --dim:#3A3D54; --dg:#FF6B6B;
+  --r:12px; --rs:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);
+  font-family:-apple-system,'PingFang SC',sans-serif;font-size:15px}
+#app{display:flex;flex-direction:column;height:100vh;height:-webkit-fill-available;overflow:hidden}
 
-  /* ── SORT BAR ── */
-  .sort-bar { display: flex; gap: 8px; padding: 12px 16px; align-items: center; }
-  .sort-label { font-size: 12px; color: var(--text-sub); flex-shrink: 0; }
-  .sort-btn {
-    padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
-    cursor: pointer; border: 1px solid var(--border); color: var(--text-sub); transition: all 0.15s;
-  }
-  .sort-btn.active { background: var(--surface2); border-color: var(--accent); color: var(--accent); }
+/* HEADER */
+.hdr{background:rgba(14,15,20,.97);border-bottom:1px solid var(--bd);
+  position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);flex-shrink:0}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;
+  padding:max(env(safe-area-inset-top),44px) 16px 10px}
+.hdr-title{font-size:20px;font-weight:800;letter-spacing:-.5px}
+.hdr-title span{color:var(--ac)}
+.icon-btn{width:34px;height:34px;border-radius:50%;border:1px solid var(--bd);
+  background:var(--sf);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:16px;color:var(--sub)}
+.tabs{display:flex}
+.tab{flex:1;padding:10px 0;font-size:13px;font-weight:600;text-align:center;
+  color:var(--sub);border-bottom:2px solid transparent;cursor:pointer;transition:all .15s}
+.tab.on{color:var(--ac);border-bottom-color:var(--ac)}
 
-  /* ── CALENDAR VIEW ── */
-  .calendar-wrap { padding: 0 12px 20px; }
-  .cal-nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 4px 12px; }
-  .cal-month { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
-  .cal-arrow { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; color: var(--text-sub); }
-  .cal-arrow:active { background: var(--surface2); }
-  .cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 6px; }
-  .cal-wd { text-align: center; font-size: 11px; font-weight: 600; color: var(--text-dim); padding: 4px 0; }
-  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
-  .cal-cell {
-    aspect-ratio: 1; border-radius: var(--radius-sm); position: relative;
-    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-    overflow: hidden; cursor: pointer; background: var(--surface); transition: all 0.15s;
-    min-height: 44px;
-  }
-  .cal-cell.empty { background: transparent; cursor: default; }
-  .cal-cell.today { box-shadow: 0 0 0 1.5px var(--accent); }
-  .cal-cell.has-games { background: var(--surface2); }
-  .cal-cell:not(.empty):active { transform: scale(0.96); }
-  .cal-day { font-size: 10px; font-weight: 700; color: var(--text-sub); padding: 3px 4px 0; align-self: flex-start; z-index: 1; }
-  .cal-cell.today .cal-day { color: var(--accent); }
-  .cal-cover-stack { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
-  .cal-cover-img {
-    position: absolute; width: 75%; aspect-ratio: 3/4; border-radius: 4px; object-fit: cover;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
-  }
-  .cal-cover-img:nth-child(1) { transform: rotate(-4deg) translateX(-3px); z-index: 2; }
-  .cal-cover-img:nth-child(2) { transform: rotate(3deg) translateX(3px); z-index: 1; }
-  .cal-cover-placeholder {
-    width: 75%; aspect-ratio: 3/4; border-radius: 4px; background: var(--border);
-    display: flex; align-items: center; justify-content: center; font-size: 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-  }
-  .cal-badge { position: absolute; bottom: 2px; right: 2px; background: var(--accent); color: #fff; font-size: 9px; font-weight: 800; width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10; }
-  .cal-tbd { font-size: 8px; font-weight: 700; color: var(--text-dim); padding: 3px 4px; text-align: center; }
+/* CONTENT */
+.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:84px}
 
-  /* ── LIST VIEW ── */
-  .list-wrap { padding: 0 16px 20px; display: flex; flex-direction: column; gap: 10px; }
-  .list-item {
-    display: flex; align-items: center; gap: 12px; padding: 10px 12px;
-    background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border);
-    transition: all 0.15s; cursor: pointer; position: relative; overflow: hidden;
-  }
-  .list-item:active { background: var(--surface2); }
-  .list-cover {
-    width: 48px; height: 64px; border-radius: 6px; object-fit: cover; flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-  }
-  .list-cover-placeholder {
-    width: 48px; height: 64px; border-radius: 6px; background: var(--surface2);
-    display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
-  }
-  .list-info { flex: 1; min-width: 0; }
-  .list-name { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
-  .list-date { font-size: 12px; color: var(--text-sub); margin-bottom: 6px; }
-  .list-tags { display: flex; gap: 5px; flex-wrap: wrap; }
-  .tag { padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; }
-  .tag.bought { background: var(--bought-glow); color: var(--bought); border: 1px solid var(--bought); }
-  .tag.played { background: var(--played-glow); color: var(--played); border: 1px solid var(--played); }
-  .tag.tbd { background: rgba(124,111,255,0.1); color: var(--accent); border: 1px solid rgba(124,111,255,0.3); }
-  .list-icons { display: flex; flex-direction: column; gap: 6px; align-items: center; }
-  .status-dot {
-    width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px;
-  }
-  .status-dot.bought { background: var(--bought-glow); }
-  .status-dot.played { background: var(--played-glow); }
+/* FAB */
+.fab{position:fixed;right:20px;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);
+  width:54px;height:54px;border-radius:50%;background:var(--ac);
+  box-shadow:0 4px 20px rgba(124,111,255,.45);display:flex;align-items:center;
+  justify-content:center;font-size:28px;cursor:pointer;z-index:150;color:#fff;user-select:none}
+.fab:active{transform:scale(.93)}
 
-  /* ── SECTION HEADERS ── */
-  .section-header { padding: 14px 16px 6px; font-size: 11px; font-weight: 700; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; }
+/* SORT BAR */
+.sort-bar{display:flex;gap:8px;padding:10px 14px;align-items:center}
+.sort-lbl{font-size:12px;color:var(--sub);flex-shrink:0}
+.sort-btn{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;
+  border:1px solid var(--bd);color:var(--sub);background:var(--sf);transition:all .15s}
+.sort-btn.on{border-color:var(--ac);color:var(--ac);background:var(--acg)}
 
-  /* ── PLAYED LIST ── */
-  .played-item { border-left: 2px solid var(--played); }
-  .played-date-chip { font-size: 11px; color: var(--played); font-weight: 600; }
+/* SECTION HEADER */
+.sec-hdr{padding:14px 16px 6px;font-size:11px;font-weight:700;color:var(--dim);
+  letter-spacing:1px;text-transform:uppercase}
 
-  /* ── EMPTY STATE ── */
-  .empty-state { padding: 60px 20px; text-align: center; }
-  .empty-icon { font-size: 52px; margin-bottom: 16px; }
-  .empty-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-  .empty-desc { font-size: 14px; color: var(--text-sub); line-height: 1.6; }
+/* LIST */
+.list-wrap{padding:0 14px;display:flex;flex-direction:column;gap:8px}
+.list-item{display:flex;align-items:center;gap:12px;padding:10px 12px;
+  background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);cursor:pointer;transition:all .15s}
+.list-item:active{background:var(--sf2)}
+.list-item.played-item{border-left:2.5px solid var(--pl)}
+.list-cover{width:46px;height:62px;border-radius:6px;object-fit:cover;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+.list-cover-ph{width:46px;height:62px;border-radius:6px;background:var(--sf2);
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.list-info{flex:1;min-width:0}
+.list-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.list-date{font-size:12px;color:var(--sub);margin-bottom:4px}
+.list-played-date{font-size:12px;color:var(--pl);font-weight:600;margin-bottom:3px}
+.list-tags{display:flex;flex-wrap:wrap;gap:4px}
+.tag{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;display:inline-block}
+.tag-tbd{background:var(--acg);color:var(--ac);border:1px solid var(--ac)}
+.tag-bought{background:var(--btg);color:var(--bt);border:1px solid var(--bt)}
+.tag-played{background:var(--plg);color:var(--pl);border:1px solid var(--pl)}
+.list-icons{display:flex;flex-direction:column;gap:5px;align-items:center}
+.status-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px}
+.status-dot.bt{background:var(--btg)}
+.status-dot.pl{background:var(--plg)}
 
-  /* ── MODAL OVERLAY ── */
-  .overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200;
-    display: flex; align-items: flex-end; justify-content: center;
-    opacity: 0; pointer-events: none; transition: opacity 0.2s;
-    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-  }
-  .overlay.open { opacity: 1; pointer-events: all; }
-  .sheet {
-    width: 100%; max-width: 500px; background: var(--surface); border-radius: 20px 20px 0 0;
-    padding-bottom: env(safe-area-inset-bottom, 20px);
-    transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
-    max-height: 92vh; display: flex; flex-direction: column;
-  }
-  .overlay.open .sheet { transform: translateY(0); }
-  .sheet-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 0; flex-shrink: 0; }
-  .sheet-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 12px; flex-shrink: 0; }
-  .sheet-title { font-size: 18px; font-weight: 700; }
-  .sheet-close { width: 28px; height: 28px; border-radius: 50%; background: var(--surface2); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; color: var(--text-sub); }
-  .sheet-body { padding: 0 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; }
-  .sheet-footer { padding: 12px 20px; flex-shrink: 0; border-top: 1px solid var(--border); }
+/* CALENDAR */
+.cal-wrap{padding:0 12px 16px}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;padding:14px 4px 10px}
+.cal-month{font-size:18px;font-weight:700}
+.cal-arrow{width:30px;height:30px;border-radius:50%;border:1px solid var(--bd);
+  background:var(--sf);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--sub)}
+.cal-arrow:active{background:var(--sf2)}
+.cal-wds{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:3px}
+.cal-wd{text-align:center;font-size:10px;font-weight:700;color:var(--dim);padding:3px 0 4px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-cell{aspect-ratio:1;border-radius:8px;position:relative;display:flex;
+  flex-direction:column;align-items:center;overflow:hidden;background:var(--sf);min-height:42px}
+.cal-cell.has-games{background:var(--sf2);cursor:pointer}
+.cal-cell.has-games:active{opacity:.8}
+.cal-cell.today{box-shadow:0 0 0 1.5px var(--ac)}
+.cal-day{font-size:10px;font-weight:700;color:var(--sub);padding:3px 4px 0;align-self:flex-start;z-index:2}
+.cal-cell.today .cal-day{color:var(--ac)}
+.cal-cover-stack{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:1}
+.cal-card{position:absolute;width:70%;aspect-ratio:3/4;border-radius:4px;
+  object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,.6)}
+.cal-card-ph{position:absolute;width:70%;aspect-ratio:3/4;border-radius:4px;
+  background:var(--bd);display:flex;align-items:center;justify-content:center;font-size:14px}
+.cal-badge{position:absolute;bottom:2px;right:2px;background:var(--ac);color:#fff;
+  font-size:9px;font-weight:800;width:14px;height:14px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;z-index:10}
+.cal-status{position:absolute;bottom:3px;left:3px;z-index:11;
+  width:7px;height:7px;border-radius:50%}
 
-  /* ── FORM ── */
-  .form-group { margin-bottom: 18px; }
-  .form-label { font-size: 12px; font-weight: 700; color: var(--text-sub); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px; display: block; }
-  .form-input {
-    width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm);
-    color: var(--text); font-size: 15px; padding: 12px 14px; outline: none; transition: border-color 0.15s;
-    -webkit-appearance: none; appearance: none; font-family: inherit;
-  }
-  .form-input:focus { border-color: var(--accent); }
-  .form-input::placeholder { color: var(--text-dim); }
-  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
-  .toggle-row:last-child { border-bottom: none; }
-  .toggle-label { display: flex; flex-direction: column; gap: 2px; }
-  .toggle-title { font-size: 15px; font-weight: 600; }
-  .toggle-desc { font-size: 12px; color: var(--text-sub); }
-  .toggle {
-    width: 44px; height: 26px; border-radius: 13px; background: var(--border); position: relative;
-    cursor: pointer; transition: background 0.2s; flex-shrink: 0;
-  }
-  .toggle.on { background: var(--accent); }
-  .toggle.bought-toggle.on { background: var(--bought); }
-  .toggle.played-toggle.on { background: var(--played); }
-  .toggle-knob {
-    position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%;
-    background: #fff; transition: transform 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-  }
-  .toggle.on .toggle-knob { transform: translateX(18px); }
+/* OVERLAY / SHEET */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .2s;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.overlay.open{opacity:1;pointer-events:all}
+.sheet{width:100%;max-width:480px;background:var(--sf);border-radius:20px 20px 0 0;
+  padding-bottom:max(env(safe-area-inset-bottom,0px),16px);
+  transform:translateY(100%);transition:transform .28s cubic-bezier(.32,.72,0,1);
+  max-height:92vh;display:flex;flex-direction:column}
+.overlay.open .sheet{transform:translateY(0)}
+.sheet-handle{width:36px;height:4px;background:var(--bd);border-radius:2px;margin:12px auto 0;flex-shrink:0}
+.sheet-hdr{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px 10px;flex-shrink:0}
+.sheet-title{font-size:18px;font-weight:700}
+.sheet-close{width:28px;height:28px;border-radius:50%;background:var(--sf2);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--sub)}
+.sheet-body{padding:0 20px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1}
+.sheet-foot{padding:10px 20px 0;flex-shrink:0;border-top:1px solid var(--bd)}
 
-  /* ── COVER PICKER ── */
-  .cover-picker { display: flex; align-items: center; gap: 12px; }
-  .cover-preview {
-    width: 64px; height: 85px; border-radius: 8px; object-fit: cover; background: var(--surface2);
-    border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
-    font-size: 28px; cursor: pointer; flex-shrink: 0; overflow: hidden;
-  }
-  .cover-preview img { width: 100%; height: 100%; object-fit: cover; }
-  .cover-actions { display: flex; flex-direction: column; gap: 8px; flex: 1; }
-  .cover-btn {
-    padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600;
-    text-align: center; cursor: pointer; border: 1px solid var(--border); color: var(--text);
-    background: var(--surface2); transition: all 0.15s;
-  }
-  .cover-btn:active { background: var(--border); }
-  #coverFileInput { display: none; }
+/* FORM */
+.fg{margin-bottom:16px}
+.flbl{font-size:11px;font-weight:700;color:var(--sub);letter-spacing:.5px;
+  text-transform:uppercase;margin-bottom:7px;display:block}
+.finput{width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);
+  color:var(--tx);font-size:15px;padding:11px 13px;outline:none;
+  font-family:inherit;-webkit-appearance:none;appearance:none}
+.finput:focus{border-color:var(--ac)}
+.finput::placeholder{color:var(--dim)}
+select.finput{cursor:pointer}
 
-  /* ── BUTTONS ── */
-  .btn {
-    width: 100%; padding: 14px; border-radius: var(--radius); font-size: 16px; font-weight: 700;
-    text-align: center; cursor: pointer; border: none; transition: all 0.15s; letter-spacing: -0.2px;
-  }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:active { background: #6a5fee; transform: scale(0.98); }
-  .btn-danger { background: rgba(255,107,107,0.15); color: var(--danger); border: 1px solid rgba(255,107,107,0.3); margin-top: 10px; }
-  .btn-danger:active { background: rgba(255,107,107,0.25); }
+/* DATE PRECISION PICKER */
+.date-prec{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.date-prec-row2{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.dopt{padding:8px 4px;border-radius:var(--rs);border:1px solid var(--bd);
+  background:var(--sf2);text-align:center;font-size:12px;font-weight:600;
+  color:var(--sub);cursor:pointer;transition:all .15s}
+.dopt.on{border-color:var(--ac);color:var(--ac);background:var(--acg)}
+.date-fields{display:flex;flex-direction:column;gap:8px}
+.date-row{display:flex;gap:8px}
+.date-row .finput{flex:1}
 
-  /* ── DATE TOGGLE ── */
-  .date-toggle { display: flex; gap: 8px; margin-bottom: 8px; }
-  .date-opt {
-    flex: 1; padding: 8px; border-radius: var(--radius-sm); border: 1px solid var(--border);
-    background: var(--surface2); text-align: center; font-size: 13px; font-weight: 600;
-    color: var(--text-sub); cursor: pointer; transition: all 0.15s;
-  }
-  .date-opt.active { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+/* COVER PICKER */
+.cover-pick{display:flex;align-items:center;gap:12px}
+.cover-prev{width:62px;height:82px;border-radius:8px;background:var(--sf2);
+  border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;
+  font-size:26px;cursor:pointer;flex-shrink:0;overflow:hidden}
+.cover-prev img{width:100%;height:100%;object-fit:cover}
+.cover-acts{display:flex;flex-direction:column;gap:7px;flex:1}
+.cover-btn{padding:9px 12px;border-radius:var(--rs);font-size:12px;font-weight:600;
+  text-align:center;cursor:pointer;border:1px solid var(--bd);color:var(--tx);background:var(--sf2)}
+.cover-btn:active{background:var(--bd)}
+.cover-btn.danger{color:var(--dg)}
 
-  /* ── DETAIL SHEET ── */
-  .detail-cover { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: var(--radius); margin-bottom: 16px; }
-  .detail-cover-ph { width: 100%; aspect-ratio: 16/9; background: var(--surface2); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 48px; margin-bottom: 16px; }
-  .detail-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.3px; }
-  .detail-date { font-size: 14px; color: var(--text-sub); margin-bottom: 14px; }
-  .detail-actions { display: flex; gap: 8px; margin-bottom: 20px; }
-  .detail-action {
-    flex: 1; padding: 10px 8px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 700;
-    text-align: center; cursor: pointer; border: 1px solid var(--border); background: var(--surface2);
-    color: var(--text-sub); transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 4px;
-  }
-  .detail-action.bought-active { background: var(--bought-glow); border-color: var(--bought); color: var(--bought); }
-  .detail-action.played-active { background: var(--played-glow); border-color: var(--played); color: var(--played); }
-  .detail-action:active { transform: scale(0.97); }
-  .detail-action-icon { font-size: 22px; }
-  .detail-played-date { background: var(--surface2); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 16px; }
-  .detail-played-date-label { font-size: 11px; font-weight: 700; color: var(--played); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px; }
-  .detail-edit-row { display: flex; gap: 8px; margin-top: 4px; }
-  .detail-edit-btn {
-    flex: 1; padding: 12px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600;
-    text-align: center; cursor: pointer; border: 1px solid var(--border); background: var(--surface2); color: var(--text);
-  }
-  .detail-edit-btn:active { background: var(--border); }
+/* BUTTONS */
+.btn{width:100%;padding:13px;border-radius:var(--r);font-size:15px;font-weight:700;
+  text-align:center;cursor:pointer;border:none;transition:all .15s;margin-top:4px}
+.btn-primary{background:var(--ac);color:#fff}
+.btn-primary:active{background:#6a5fee}
+.btn-danger{background:rgba(255,107,107,.12);color:var(--dg);
+  border:1px solid rgba(255,107,107,.25)!important;margin-top:8px}
 
-  /* ── CALENDAR DAY DETAIL ── */
-  .day-detail-list { display: flex; flex-direction: column; gap: 10px; padding: 4px 0 8px; }
+/* DETAIL */
+.detail-cover-ph{width:100%;aspect-ratio:16/9;background:var(--sf2);border-radius:var(--r);
+  display:flex;align-items:center;justify-content:center;font-size:52px;margin-bottom:14px}
+.detail-cover-img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:var(--r);margin-bottom:14px}
+.detail-title{font-size:22px;font-weight:800;margin-bottom:5px;letter-spacing:-.3px}
+.detail-date{font-size:13px;color:var(--sub);margin-bottom:14px}
+.detail-acts{display:flex;gap:8px;margin-bottom:16px}
+.detail-act{flex:1;padding:10px 6px;border-radius:10px;font-size:12px;font-weight:700;
+  text-align:center;cursor:pointer;border:1px solid var(--bd);background:var(--sf2);
+  color:var(--sub);display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .15s}
+.detail-act:active{opacity:.8}
+.detail-act.bt-on{background:var(--btg);border-color:var(--bt);color:var(--bt)}
+.detail-act.pl-on{background:var(--plg);border-color:var(--pl);color:var(--pl)}
+.detail-act-icon{font-size:22px}
+.detail-edit-row{display:flex;gap:8px;margin-top:4px}
+.detail-edit-btn{flex:1;padding:12px;border-radius:10px;font-size:14px;font-weight:600;
+  text-align:center;cursor:pointer;border:1px solid var(--bd);background:var(--sf2);color:var(--tx)}
+.detail-edit-btn:active{background:var(--bd)}
+.played-date-box{background:var(--sf2);border-radius:10px;padding:12px 14px;margin-bottom:14px}
+.played-date-lbl{font-size:11px;font-weight:700;color:var(--pl);letter-spacing:.5px;
+  text-transform:uppercase;margin-bottom:8px}
 
-  /* ── IMPORT/EXPORT ── */
-  .io-btn {
-    display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: var(--surface2);
-    border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; border: 1px solid var(--border); margin-bottom: 10px;
-  }
-  .io-btn:active { background: var(--border); }
-  .io-btn-icon { font-size: 22px; }
-  .io-btn-text { flex: 1; }
-  .io-btn-title { font-size: 15px; font-weight: 600; }
-  .io-btn-desc { font-size: 12px; color: var(--text-sub); }
+/* IO */
+.io-btn{display:flex;align-items:center;gap:12px;padding:13px 14px;
+  background:var(--sf2);border-radius:10px;cursor:pointer;border:1px solid var(--bd);margin-bottom:10px}
+.io-btn:active{background:var(--bd)}
+.io-icon{font-size:22px}
+.io-title{font-size:14px;font-weight:600;margin-bottom:2px}
+.io-desc{font-size:11px;color:var(--sub)}
+.io-tip{margin-top:14px;padding:12px 14px;background:var(--sf2);border-radius:10px;
+  font-size:12px;color:var(--sub);line-height:1.7}
 
-  /* ── TOAST ── */
-  .toast {
-    position: fixed; bottom: calc(env(safe-area-inset-bottom) + 90px); left: 50%; transform: translateX(-50%) translateY(20px);
-    background: var(--surface2); border: 1px solid var(--border); border-radius: 24px;
-    padding: 10px 20px; font-size: 14px; font-weight: 600; color: var(--text);
-    z-index: 500; opacity: 0; transition: all 0.25s; white-space: nowrap;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+/* EMPTY */
+.empty{padding:60px 20px;text-align:center}
+.empty-icon{font-size:50px;margin-bottom:14px}
+.empty-title{font-size:17px;font-weight:700;margin-bottom:8px}
+.empty-desc{font-size:13px;color:var(--sub);line-height:1.6}
 
-  /* ── FAB ── */
-  .fab {
-    position: fixed; right: 20px; bottom: calc(env(safe-area-inset-bottom) + 24px);
-    width: 56px; height: 56px; border-radius: 50%; background: var(--accent);
-    box-shadow: 0 4px 20px rgba(124,111,255,0.4); display: flex; align-items: center; justify-content: center;
-    font-size: 26px; cursor: pointer; z-index: 150; transition: all 0.15s; color: #fff;
-  }
-  .fab:active { transform: scale(0.93); }
+/* TOAST */
+.toast{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 90px);
+  left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--sf2);border:1px solid var(--bd);border-radius:24px;
+  padding:9px 20px;font-size:13px;font-weight:600;color:var(--tx);
+  z-index:500;opacity:0;transition:all .22s;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-  /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  /* ── UTILITIES ── */
-  input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); }
-  .divider { height: 1px; background: var(--border); margin: 6px 0; }
+input[type="file"]{display:none}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
 </style>
 </head>
 <body>
 <div id="app">
-  <div class="header">
-    <div class="header-top">
-      <div class="header-title">GAME<span>LOG</span></div>
-      <div class="header-actions">
-        <div class="icon-btn" onclick="openIO()">⇅</div>
-      </div>
+  <div class="hdr">
+    <div class="hdr-top">
+      <div class="hdr-title">GAME<span>LOG</span></div>
+      <div class="icon-btn" onclick="openIO()">⇅</div>
     </div>
-    <div class="view-tabs">
-      <div class="tab-btn active" id="tab-calendar" onclick="switchMainTab('calendar')">📅 日历</div>
-      <div class="tab-btn" id="tab-list" onclick="switchMainTab('list')">☰ 列表</div>
-      <div class="tab-btn" id="tab-played" onclick="switchMainTab('played')">🎮 游玩记录</div>
+    <div class="tabs">
+      <div class="tab on" id="tab-calendar" onclick="switchTab('calendar')">📅 日历</div>
+      <div class="tab" id="tab-list" onclick="switchTab('list')">☰ 列表</div>
+      <div class="tab" id="tab-played" onclick="switchTab('played')">⭐ 游玩</div>
     </div>
   </div>
-
-  <div class="content" id="main-content"></div>
+  <div class="content" id="content"></div>
 </div>
 
-<!-- FAB -->
-<div class="fab" onclick="openAddSheet()">＋</div>
-
-<!-- Add/Edit Game Sheet -->
-<div class="overlay" id="addOverlay" onclick="handleOverlayClick(event,'addOverlay')">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header">
-      <div class="sheet-title" id="addSheetTitle">添加游戏</div>
-      <div class="sheet-close" onclick="closeOverlay('addOverlay')">✕</div>
-    </div>
-    <div class="sheet-body">
-      <div class="form-group">
-        <label class="form-label">游戏名称</label>
-        <input class="form-input" type="text" id="inputName" placeholder="例：最终幻想 XVII">
-      </div>
-      <div class="form-group">
-        <label class="form-label">封面图片</label>
-        <div class="cover-picker">
-          <div class="cover-preview" id="coverPreview" onclick="document.getElementById('coverFileInput').click()">🎮</div>
-          <div class="cover-actions">
-            <div class="cover-btn" onclick="document.getElementById('coverFileInput').click()">📁 从相册选取</div>
-            <div class="cover-btn" onclick="promptCoverUrl()">🔗 粘贴图片链接</div>
-            <div class="cover-btn" id="removeCoverBtn" style="color:var(--danger);display:none" onclick="removeCover()">🗑 移除封面</div>
-          </div>
-        </div>
-        <input type="file" id="coverFileInput" accept="image/*" onchange="handleCoverFile(event)">
-      </div>
-      <div class="form-group">
-        <label class="form-label">发售日期</label>
-        <div class="date-toggle">
-          <div class="date-opt active" id="dateOptKnown" onclick="setDateMode('known')">具体日期</div>
-          <div class="date-opt" id="dateOptTBD" onclick="setDateMode('tbd')">待定 TBD</div>
-        </div>
-        <input class="form-input" type="date" id="inputDate" style="display:block">
-      </div>
-    </div>
-    <div class="sheet-footer">
-      <button class="btn btn-primary" id="saveGameBtn" onclick="saveGame()">保存游戏</button>
-      <button class="btn btn-danger" id="deleteGameBtn" style="display:none" onclick="deleteCurrentGame()">删除此游戏</button>
-    </div>
-  </div>
-</div>
-
-<!-- Detail Sheet -->
-<div class="overlay" id="detailOverlay" onclick="handleOverlayClick(event,'detailOverlay')">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header">
-      <div class="sheet-title">游戏详情</div>
-      <div class="sheet-close" onclick="closeOverlay('detailOverlay')">✕</div>
-    </div>
-    <div class="sheet-body" id="detailBody"></div>
-    <div class="sheet-footer">
-      <div class="detail-edit-row">
-        <div class="detail-edit-btn" onclick="editCurrentGame()">✏️ 编辑</div>
-        <div class="detail-edit-btn" onclick="closeOverlay('detailOverlay')">关闭</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Calendar Day Sheet -->
-<div class="overlay" id="dayOverlay" onclick="handleOverlayClick(event,'dayOverlay')">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header">
-      <div class="sheet-title" id="daySheetTitle">当日发售</div>
-      <div class="sheet-close" onclick="closeOverlay('dayOverlay')">✕</div>
-    </div>
-    <div class="sheet-body" id="dayBody"></div>
-  </div>
-</div>
-
-<!-- IO Sheet -->
-<div class="overlay" id="ioOverlay" onclick="handleOverlayClick(event,'ioOverlay')">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header">
-      <div class="sheet-title">数据管理</div>
-      <div class="sheet-close" onclick="closeOverlay('ioOverlay')">✕</div>
-    </div>
-    <div class="sheet-body">
-      <div style="padding: 8px 0 16px">
-        <div class="io-btn" onclick="exportData()">
-          <div class="io-btn-icon">📤</div>
-          <div class="io-btn-text">
-            <div class="io-btn-title">导出数据</div>
-            <div class="io-btn-desc">保存为 JSON 文件，可用于备份或迁移</div>
-          </div>
-        </div>
-        <div class="io-btn" onclick="document.getElementById('importInput').click()">
-          <div class="io-btn-icon">📥</div>
-          <div class="io-btn-text">
-            <div class="io-btn-title">导入数据</div>
-            <div class="io-btn-desc">从 JSON 文件恢复（将合并现有数据）</div>
-          </div>
-        </div>
-        <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)">
-        <div class="io-btn" onclick="clearAllData()" style="border-color:rgba(255,107,107,0.3)">
-          <div class="io-btn-icon">🗑️</div>
-          <div class="io-btn-text">
-            <div class="io-btn-title" style="color:var(--danger)">清空所有数据</div>
-            <div class="io-btn-desc">不可恢复，操作前请先导出备份</div>
-          </div>
-        </div>
-        <div style="margin-top:16px;padding:12px;background:var(--surface2);border-radius:var(--radius-sm);font-size:12px;color:var(--text-sub);line-height:1.7">
-          💡 <strong style="color:var(--text)">保存到桌面：</strong>在 Safari 中打开此页面 → 点击分享 → 添加到主屏幕，即可像 App 一样使用，数据自动保存在设备本地。
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Toast -->
+<div class="fab" onclick="openAdd()">＋</div>
 <div class="toast" id="toast"></div>
 
-<script>
-// ── STATE ──
-let games = [];
-let currentTab = 'calendar';
-let currentSort = 'date';
-let calYear = new Date().getFullYear();
-let calMonth = new Date().getMonth();
-let editingId = null;
-let currentCoverData = null;
-let dateMode = 'known';
-let currentDetailId = null;
-let playedSubTab = 'list';
+<!-- ADD/EDIT SHEET -->
+<div class="overlay" id="ov-add" onclick="bgClose(event,'ov-add')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div class="sheet-title" id="add-title">添加游戏</div>
+      <div class="sheet-close" onclick="close('ov-add')">✕</div>
+    </div>
+    <div class="sheet-body">
+      <div class="fg">
+        <label class="flbl">游戏名称</label>
+        <input class="finput" id="f-name" type="text" placeholder="例：最终幻想 XVII">
+      </div>
+      <div class="fg">
+        <label class="flbl">封面图片</label>
+        <div class="cover-pick">
+          <div class="cover-prev" id="cover-prev" onclick="document.getElementById('f-file').click()">🎮</div>
+          <div class="cover-acts">
+            <div class="cover-btn" onclick="document.getElementById('f-file').click()">📁 从相册选取</div>
+            <div class="cover-btn" onclick="pickUrl()">🔗 粘贴图片链接</div>
+            <div class="cover-btn danger" id="cover-rm" style="display:none" onclick="rmCover()">🗑 移除封面</div>
+          </div>
+        </div>
+        <input type="file" id="f-file" accept="image/*" onchange="handleFile(event)">
+      </div>
+      <div class="fg">
+        <label class="flbl">发售时间</label>
+        <!-- 6 precision options in 2 rows of 3 -->
+        <div class="date-prec">
+          <div class="dopt on" id="dp-exact"  onclick="setPrec('exact')">具体日期</div>
+          <div class="dopt"    id="dp-month"  onclick="setPrec('month')">年 · 月</div>
+          <div class="dopt"    id="dp-quarter"onclick="setPrec('quarter')">年 · 季度</div>
+        </div>
+        <div class="date-prec-row2">
+          <div class="dopt"    id="dp-year"   onclick="setPrec('year')">仅年份</div>
+          <div class="dopt"    id="dp-tbd"    onclick="setPrec('tbd')">待定 TBD</div>
+          <div class="dopt"    id="dp-unknown"onclick="setPrec('unknown')">未知</div>
+        </div>
+        <!-- dynamic fields -->
+        <div id="date-fields"></div>
+      </div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-primary" id="save-btn" onclick="saveGame()">保存游戏</button>
+      <button class="btn btn-danger" id="del-btn" style="display:none" onclick="deleteGame()">删除此游戏</button>
+    </div>
+  </div>
+</div>
 
-// ── STORAGE ──
-const STORAGE_KEY = 'gamelog_v1';
-function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(games)); } catch(e) {} }
-function load() {
-  try {
-    const d = localStorage.getItem(STORAGE_KEY);
-    if (d) games = JSON.parse(d);
-  } catch(e) { games = []; }
+<!-- DETAIL SHEET -->
+<div class="overlay" id="ov-detail" onclick="bgClose(event,'ov-detail')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div class="sheet-title">游戏详情</div>
+      <div class="sheet-close" onclick="close('ov-detail')">✕</div>
+    </div>
+    <div class="sheet-body" id="detail-body"></div>
+    <div class="sheet-foot">
+      <div class="detail-edit-row">
+        <div class="detail-edit-btn" onclick="editFromDetail()">✏️ 编辑</div>
+        <div class="detail-edit-btn" onclick="close('ov-detail')">关闭</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DAY SHEET -->
+<div class="overlay" id="ov-day" onclick="bgClose(event,'ov-day')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div class="sheet-title" id="day-title">当日发售</div>
+      <div class="sheet-close" onclick="close('ov-day')">✕</div>
+    </div>
+    <div class="sheet-body" id="day-body"></div>
+  </div>
+</div>
+
+<!-- IO SHEET -->
+<div class="overlay" id="ov-io" onclick="bgClose(event,'ov-io')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div class="sheet-title">数据管理</div>
+      <div class="sheet-close" onclick="close('ov-io')">✕</div>
+    </div>
+    <div class="sheet-body">
+      <div style="padding:6px 0 12px">
+        <div class="io-btn" onclick="exportData()">
+          <div class="io-icon">📤</div>
+          <div><div class="io-title">导出数据</div><div class="io-desc">保存为 JSON 文件，用于备份或迁移</div></div>
+        </div>
+        <div class="io-btn" onclick="document.getElementById('f-import').click()">
+          <div class="io-icon">📥</div>
+          <div><div class="io-title">导入数据</div><div class="io-desc">从 JSON 文件恢复，将合并现有数据</div></div>
+        </div>
+        <div class="io-btn" style="border-color:rgba(255,107,107,.3)" onclick="clearAll()">
+          <div class="io-icon">🗑️</div>
+          <div><div class="io-title" style="color:var(--dg)">清空所有数据</div><div class="io-desc">操作前请先导出备份</div></div>
+        </div>
+        <input type="file" id="f-import" accept=".json" onchange="importData(event)">
+        <div class="io-tip">
+          💡 <strong style="color:var(--tx)">保存到桌面：</strong>
+          在 Safari 中打开此文件 → 点击底部分享按钮 → 添加到主屏幕，即可像 App 一样使用。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────
+const SK = 'gamelog_v3';
+let games = [];
+let tab = 'calendar';
+let calY = new Date().getFullYear();
+let calM = new Date().getMonth();
+let sort = 'date';
+let editId = null;
+let detailId = null;
+let prec = 'exact';   // exact | month | quarter | year | tbd | unknown
+let coverData = null;
+
+function save() { try { localStorage.setItem(SK, JSON.stringify(games)); } catch(e){} }
+function load() { try { const d = localStorage.getItem(SK); if(d) games = JSON.parse(d); } catch(e){ games=[]; } }
+
+// ─────────────────────────────────────────
+// DATE HELPERS
+// ─────────────────────────────────────────
+// A game stores: { releaseDate, releasePrecision }
+// releaseDate: '2025-03-15' | '2025-03' | '2025-Q2' | '2025' | 'tbd' | 'unknown'
+// releasePrecision: 'exact'|'month'|'quarter'|'year'|'tbd'|'unknown'
+
+function fmtRelease(g) {
+  const p = g.releasePrecision || 'exact';
+  const d = g.releaseDate || '';
+  if (p === 'tbd' || d === 'tbd') return '待定 TBD';
+  if (p === 'unknown' || d === 'unknown') return '发售日期未知';
+  if (p === 'year') return d + ' 年';
+  if (p === 'quarter') {
+    const [y, q] = d.split('-');
+    return `${y} 年 ${q}`;
+  }
+  if (p === 'month') {
+    const [y, m] = d.split('-');
+    return `${y} 年 ${parseInt(m)} 月`;
+  }
+  // exact
+  if (!d) return '—';
+  const dt = new Date(d + 'T00:00:00');
+  return `${dt.getFullYear()} 年 ${dt.getMonth()+1} 月 ${dt.getDate()} 日`;
 }
 
-// ── INIT ──
+function releaseYear(g) {
+  const d = g.releaseDate || '';
+  if (!d || d === 'tbd' || d === 'unknown') return null;
+  return parseInt(d.split('-')[0]);
+}
+
+function releaseExactDate(g) {
+  // returns 'YYYY-MM-DD' only if precision is exact
+  if ((g.releasePrecision || 'exact') === 'exact' && g.releaseDate && g.releaseDate.length === 10) return g.releaseDate;
+  return null;
+}
+
+function sortKey(g) {
+  const p = g.releasePrecision || 'exact';
+  if (p === 'tbd') return '9998';
+  if (p === 'unknown') return '9999';
+  if (p === 'exact') return g.releaseDate || '9997';
+  if (p === 'month') return g.releaseDate + '-15';
+  if (p === 'quarter') {
+    const [y, q] = g.releaseDate.split('-');
+    const m = {'Q1':'02','Q2':'05','Q3':'08','Q4':'11'}[q] || '06';
+    return `${y}-${m}-15`;
+  }
+  if (p === 'year') return g.releaseDate + '-07-01';
+  return '9999';
+}
+
+function today() { return new Date().toISOString().slice(0,10); }
+function fmtExact(s) {
+  if (!s) return '';
+  const d = new Date(s + 'T00:00:00');
+  return `${d.getFullYear()} 年 ${d.getMonth()+1} 月 ${d.getDate()} 日`;
+}
+function fmtYM(s) { const [y,m]=s.split('-'); return `${y} 年 ${parseInt(m)} 月`; }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ─────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────
 load();
 render();
 
+// ─────────────────────────────────────────
+// TABS
+// ─────────────────────────────────────────
+function switchTab(t) {
+  tab = t;
+  ['calendar','list','played'].forEach(k => {
+    document.getElementById('tab-'+k).classList.toggle('on', k===t);
+  });
+  render();
+}
+
+// ─────────────────────────────────────────
+// MAIN RENDER
+// ─────────────────────────────────────────
 function render() {
-  const el = document.getElementById('main-content');
-  if (currentTab === 'calendar') el.innerHTML = renderCalendar();
-  else if (currentTab === 'list') el.innerHTML = renderList();
+  const el = document.getElementById('content');
+  if (tab==='calendar') el.innerHTML = renderCalendar();
+  else if (tab==='list') el.innerHTML = renderList();
   else el.innerHTML = renderPlayed();
 }
 
-// ── TABS ──
-function switchMainTab(tab) {
-  currentTab = tab;
-  ['calendar','list','played'].forEach(t => {
-    document.getElementById('tab-'+t).classList.toggle('active', t === tab);
-  });
-  render();
-}
-
-// ── CALENDAR ──
+// ─────────────────────────────────────────
+// CALENDAR
+// ─────────────────────────────────────────
 function renderCalendar() {
-  const today = new Date();
-  const firstDay = new Date(calYear, calMonth, 1).getDay();
-  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
-  const monthNames = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
-  
-  // Group games by date
+  const todayStr = today();
+  const firstDay = new Date(calY, calM, 1).getDay();
+  const days = new Date(calY, calM+1, 0).getDate();
+  const months = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+
+  // group by exact date
   const byDate = {};
   games.forEach(g => {
-    if (!g.tbd && g.releaseDate) {
-      const d = g.releaseDate;
-      if (!byDate[d]) byDate[d] = [];
-      byDate[d].push(g);
-    }
+    const d = releaseExactDate(g);
+    if (d) { if (!byDate[d]) byDate[d]=[]; byDate[d].push(g); }
   });
-  
-  const tbdGames = games.filter(g => g.tbd);
-  
-  let cells = '';
-  const startOffset = firstDay === 0 ? 6 : firstDay - 1; // Mon-start
-  for (let i = 0; i < startOffset; i++) cells += `<div class="cal-cell empty"></div>`;
-  
-  for (let d = 1; d <= daysInMonth; d++) {
-    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const isToday = today.getFullYear()===calYear && today.getMonth()===calMonth && today.getDate()===d;
-    const dayGames = byDate[dateStr] || [];
-    const hasGames = dayGames.length > 0;
-    
-    let inner = `<div class="cal-day">${d}</div>`;
-    if (hasGames) {
-      inner += `<div class="cal-cover-stack">`;
-      const show = dayGames.slice(0,2);
-      show.forEach((g,i) => {
-        if (g.cover) inner += `<img class="cal-cover-img" src="${g.cover}" style="z-index:${2-i};transform:${i===0?'rotate(-4deg) translateX(-3px)':'rotate(3deg) translateX(3px)'}">`;
-        else inner += `<div class="cal-cover-placeholder" style="z-index:${2-i};transform:${i===0?'rotate(-4deg) translateX(-3px)':'rotate(3deg) translateX(3px)'}">🎮</div>`;
-      });
-      inner += `</div>`;
-      if (dayGames.length > 2) inner += `<div class="cal-badge">${dayGames.length}</div>`;
-      // Status indicators
-      const hasBought = dayGames.some(g=>g.bought);
-      const hasPlayed = dayGames.some(g=>g.played);
+
+  // "vague" games (year/quarter/month) that match current calendar month
+  const vagueThisMonth = games.filter(g => {
+    const p = g.releasePrecision || 'exact';
+    if (p === 'tbd' || p === 'unknown' || p === 'exact') return false;
+    const ry = releaseYear(g);
+    if (ry !== calY) return false;
+    if (p === 'year') return true;
+    if (p === 'quarter') {
+      const q = parseInt((g.releaseDate||'').split('-Q')[1]);
+      const mq = Math.floor(calM/3)+1;
+      return q === mq;
     }
-    
-    cells += `<div class="cal-cell${hasGames?' has-games':''}${isToday?' today':''}" onclick="${hasGames?`openDaySheet('${dateStr}')`:''}" >
-      ${inner}
+    if (p === 'month') {
+      const rm = parseInt((g.releaseDate||'').split('-')[1]);
+      return rm === calM+1;
+    }
+    return false;
+  });
+
+  const tbd = games.filter(g => g.releasePrecision==='tbd' || g.releasePrecision==='unknown');
+
+  const offset = firstDay===0 ? 6 : firstDay-1;
+  let cells = '';
+  for (let i=0;i<offset;i++) cells += '<div></div>';
+
+  for (let d=1; d<=days; d++) {
+    const ds = `${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = ds===todayStr;
+    const dg = byDate[ds]||[];
+    const has = dg.length>0;
+    let dotHtml = '';
+    if (has) {
+      const allPlayed = dg.every(g=>g.played);
+      const anyBought = dg.some(g=>g.bought||g.played);
+      const dotColor = allPlayed ? 'var(--pl)' : anyBought ? 'var(--bt)' : '';
+      if (dotColor) dotHtml = `<div class="cal-status" style="background:${dotColor};box-shadow:0 0 4px ${dotColor}"></div>`;
+    }
+    let coverHtml = '';
+    if (has) {
+      coverHtml = '<div class="cal-cover-stack">';
+      dg.slice(0,2).forEach((g,i) => {
+        const rot = i===0 ? 'rotate(-4deg) translateX(-3px)' : 'rotate(3deg) translateX(3px)';
+        const zi = 2-i;
+        if (g.cover) {
+          coverHtml += `<img class="cal-card" src="${esc(g.cover)}" style="z-index:${zi};transform:${rot}">`;
+        } else {
+          coverHtml += `<div class="cal-card-ph" style="z-index:${zi};transform:${rot}">🎮</div>`;
+        }
+      });
+      coverHtml += '</div>';
+    }
+    const badge = dg.length>2 ? `<div class="cal-badge">${dg.length}</div>` : '';
+    cells += `<div class="cal-cell${has?' has-games':''}${isToday?' today':''}" ${has?`onclick="openDay('${ds}')"`:''}>
+      <span class="cal-day">${d}</span>
+      ${coverHtml}${badge}${dotHtml}
     </div>`;
   }
-  
-  // TBD section
-  let tbdSection = '';
-  if (tbdGames.length > 0) {
-    tbdSection = `<div class="section-header">📌 待定发售 (${tbdGames.length})</div>
-    <div class="list-wrap">
-      ${tbdGames.map(g => renderListItem(g)).join('')}
-    </div>`;
+
+  let vagueHtml = '';
+  if (vagueThisMonth.length > 0) {
+    vagueHtml = `<div class="sec-hdr">🗓 本月范围内发售 (${vagueThisMonth.length})</div>
+    <div class="list-wrap">${vagueThisMonth.map(g=>listItemHtml(g,false,false)).join('')}</div>`;
   }
-  
-  return `<div class="calendar-wrap">
+
+  let tbdHtml = '';
+  if (tbd.length > 0) {
+    tbdHtml = `<div class="sec-hdr">📌 待定 / 未知 (${tbd.length})</div>
+    <div class="list-wrap">${tbd.map(g=>listItemHtml(g,false,false)).join('')}</div>`;
+  }
+
+  const empty = games.length===0 ? emptyHtml('📅','还没有游戏发售记录','点击右下角 ＋ 添加你期待的游戏') : '';
+
+  return `<div class="cal-wrap">
     <div class="cal-nav">
-      <div class="cal-arrow" onclick="changeMonth(-1)">‹</div>
-      <div class="cal-month">${calYear}年 ${monthNames[calMonth]}</div>
-      <div class="cal-arrow" onclick="changeMonth(1)">›</div>
+      <div class="cal-arrow" onclick="chMonth(-1)">‹</div>
+      <div class="cal-month">${calY} 年 ${months[calM]}</div>
+      <div class="cal-arrow" onclick="chMonth(1)">›</div>
     </div>
-    <div class="cal-weekdays">
-      ${['一','二','三','四','五','六','日'].map(d=>`<div class="cal-wd">${d}</div>`).join('')}
-    </div>
+    <div class="cal-wds">${['一','二','三','四','五','六','日'].map(w=>`<div class="cal-wd">${w}</div>`).join('')}</div>
     <div class="cal-grid">${cells}</div>
   </div>
-  ${tbdSection}
-  ${games.length===0?renderEmpty('calendar'):''}`;
+  ${vagueHtml}${tbdHtml}${empty}`;
 }
 
-function changeMonth(dir) {
-  calMonth += dir;
-  if (calMonth > 11) { calMonth = 0; calYear++; }
-  if (calMonth < 0) { calMonth = 11; calYear--; }
+function chMonth(d) {
+  calM += d;
+  if (calM>11){calM=0;calY++;} if(calM<0){calM=11;calY--;}
   render();
 }
 
-function openDaySheet(dateStr) {
-  const dayGames = games.filter(g => !g.tbd && g.releaseDate === dateStr);
-  const date = new Date(dateStr + 'T00:00:00');
-  const fmt = `${date.getFullYear()}年${date.getMonth()+1}月${date.getDate()}日`;
-  document.getElementById('daySheetTitle').textContent = fmt + ' 发售';
-  document.getElementById('dayBody').innerHTML = `<div class="day-detail-list">
-    ${dayGames.map(g => renderListItem(g)).join('')}
-  </div>`;
-  openOverlay('dayOverlay');
+function openDay(ds) {
+  const dg = games.filter(g => releaseExactDate(g)===ds);
+  const dt = new Date(ds+'T00:00:00');
+  document.getElementById('day-title').textContent = `${dt.getFullYear()} 年 ${dt.getMonth()+1} 月 ${dt.getDate()} 日`;
+  document.getElementById('day-body').innerHTML = `<div class="list-wrap" style="padding:4px 0 8px">${dg.map(g=>listItemHtml(g,false,false)).join('')}</div>`;
+  open('ov-day');
 }
 
-// ── LIST VIEW ──
+// ─────────────────────────────────────────
+// LIST
+// ─────────────────────────────────────────
 function renderList() {
-  if (games.length === 0) return renderEmpty('list');
-  
-  let sorted = [...games];
-  if (currentSort === 'name') {
-    sorted.sort((a,b) => a.name.localeCompare(b.name, 'zh'));
-  } else {
-    sorted.sort((a,b) => {
-      if (a.tbd && b.tbd) return a.name.localeCompare(b.name,'zh');
-      if (a.tbd) return 1;
-      if (b.tbd) return -1;
-      return a.releaseDate.localeCompare(b.releaseDate);
-    });
-  }
-  
+  if (!games.length) return emptyHtml('🎮','游戏列表是空的','添加你的第一款游戏吧');
+  const sorted = [...games].sort((a,b) => {
+    if (sort==='name') return a.name.localeCompare(b.name,'zh');
+    return sortKey(a).localeCompare(sortKey(b));
+  });
   return `<div class="sort-bar">
-    <span class="sort-label">排序：</span>
-    <div class="sort-btn${currentSort==='date'?' active':''}" onclick="setSort('date')">📅 发售日</div>
-    <div class="sort-btn${currentSort==='name'?' active':''}" onclick="setSort('name')">🔤 名称</div>
+    <span class="sort-lbl">排序：</span>
+    <div class="sort-btn${sort==='date'?' on':''}" onclick="setSort('date')">📅 发售日</div>
+    <div class="sort-btn${sort==='name'?' on':''}" onclick="setSort('name')">🔤 名称</div>
   </div>
-  <div class="list-wrap">
-    ${sorted.map(g => renderListItem(g)).join('')}
-  </div>`;
+  <div class="list-wrap">${sorted.map(g=>listItemHtml(g,false,false)).join('')}</div>`;
 }
 
-function renderListItem(g) {
-  const coverHtml = g.cover
-    ? `<img class="list-cover" src="${g.cover}" onerror="this.style.display='none'">`
-    : `<div class="list-cover-placeholder">🎮</div>`;
-  const dateStr = g.tbd ? '待定 TBD' : formatDate(g.releaseDate);
-  const tags = [
-    g.tbd ? `<span class="tag tbd">TBD</span>` : '',
-    g.bought ? `<span class="tag bought">💳 已购买</span>` : '',
-    g.played ? `<span class="tag played">🎮 已游玩</span>` : '',
-  ].filter(Boolean).join('');
-  
-  return `<div class="list-item" onclick="openDetail('${g.id}')">
-    ${coverHtml}
-    <div class="list-info">
-      <div class="list-name">${escHtml(g.name)}</div>
-      <div class="list-date">${dateStr}</div>
-      ${tags ? `<div class="list-tags">${tags}</div>` : ''}
-    </div>
-    <div class="list-icons">
-      ${g.bought ? `<div class="status-dot bought">💳</div>` : ''}
-      ${g.played ? `<div class="status-dot played">⭐</div>` : ''}
-    </div>
-  </div>`;
-}
+function setSort(s) { sort=s; render(); }
 
-function setSort(s) { currentSort = s; render(); }
-
-// ── PLAYED VIEW ──
+// ─────────────────────────────────────────
+// PLAYED
+// ─────────────────────────────────────────
 function renderPlayed() {
-  const playedGames = games.filter(g => g.played);
-  
-  let sorted = [...playedGames];
-  sorted.sort((a,b) => {
-    const da = a.playedDate || '9999';
-    const db = b.playedDate || '9999';
-    return db.localeCompare(da);
-  });
-  
-  if (playedGames.length === 0) return renderEmpty('played');
-  
-  // Group by year-month
+  const pg = games.filter(g=>g.played).sort((a,b)=>((b.playedDate||'9999')).localeCompare(a.playedDate||'9999'));
+  if (!pg.length) return emptyHtml('⭐','还没有游玩记录','将游戏标记为已游玩后，会在这里显示');
   const groups = {};
-  sorted.forEach(g => {
-    const key = g.playedDate ? g.playedDate.slice(0,7) : 'unknown';
-    if (!groups[key]) groups[key] = [];
-    groups[key].push(g);
+  pg.forEach(g => { const k=g.playedDate?g.playedDate.slice(0,7):'unknown'; if(!groups[k])groups[k]=[]; groups[k].push(g); });
+  let html = '<div style="padding-bottom:8px">';
+  Object.entries(groups).sort((a,b)=>b[0].localeCompare(a[0])).forEach(([k,gs]) => {
+    html += `<div class="sec-hdr">${k==='unknown'?'日期未知':fmtYM(k)}</div>
+    <div class="list-wrap">${gs.map(g=>listItemHtml(g,true,true)).join('')}</div>`;
   });
-  
-  let html = `<div style="padding-bottom:80px">`;
-  Object.entries(groups).sort((a,b)=>b[0].localeCompare(a[0])).forEach(([key, gs]) => {
-    const label = key === 'unknown' ? '日期未知' : formatYearMonth(key);
-    html += `<div class="section-header">${label}</div><div class="list-wrap">`;
-    gs.forEach(g => {
-      const coverHtml = g.cover
-        ? `<img class="list-cover" src="${g.cover}" onerror="this.style.display='none'">`
-        : `<div class="list-cover-placeholder">🎮</div>`;
-      html += `<div class="list-item played-item" onclick="openDetail('${g.id}')">
-        ${coverHtml}
-        <div class="list-info">
-          <div class="list-name">${escHtml(g.name)}</div>
-          <div class="played-date-chip">🎮 ${g.playedDate ? formatDate(g.playedDate) : '已游玩'}</div>
-          ${g.releaseDate && !g.tbd ? `<div class="list-date" style="margin-top:3px">发售：${formatDate(g.releaseDate)}</div>` : ''}
-          ${g.bought ? `<div class="list-tags"><span class="tag bought">💳 已购买</span></div>` : ''}
-        </div>
-        <div class="list-icons"><div class="status-dot played">⭐</div></div>
-      </div>`;
-    });
-    html += `</div>`;
-  });
-  html += `</div>`;
+  html += '</div>';
   return html;
 }
 
-// ── EMPTY STATE ──
-function renderEmpty(tab) {
-  if (tab === 'calendar' && games.length > 0) return '';
-  const msgs = {
-    calendar: { icon:'📅', title:'还没有游戏发售记录', desc:'点击右下角 ＋ 添加你期待的游戏' },
-    list: { icon:'🎮', title:'游戏列表是空的', desc:'添加你的第一款游戏吧' },
-    played: { icon:'⭐', title:'还没有游玩记录', desc:'将游戏标记为已游玩后，会在这里显示' },
-  };
-  const m = msgs[tab];
-  return `<div class="empty-state"><div class="empty-icon">${m.icon}</div><div class="empty-title">${m.title}</div><div class="empty-desc">${m.desc}</div></div>`;
+// ─────────────────────────────────────────
+// LIST ITEM HTML
+// ─────────────────────────────────────────
+function listItemHtml(g, isPlayedRow, inPlayedTab) {
+  const cover = g.cover
+    ? `<img class="list-cover" src="${esc(g.cover)}" onerror="this.style.display='none'">`
+    : `<div class="list-cover-ph">🎮</div>`;
+
+  const dateHtml = (isPlayedRow && g.playedDate)
+    ? `<div class="list-played-date">🎮 ${fmtExact(g.playedDate)}</div>`
+    : `<div class="list-date">${fmtRelease(g)}</div>`;
+
+  const p = g.releasePrecision || 'exact';
+  const tags = [
+    (p==='tbd'||p==='unknown') ? `<span class="tag tag-tbd">${p==='tbd'?'TBD':'未知'}</span>` : '',
+    (!inPlayedTab && g.bought) ? `<span class="tag tag-bought">💳 已购买</span>` : '',
+    (!inPlayedTab && g.played) ? `<span class="tag tag-played">⭐ 已游玩</span>` : '',
+  ].filter(Boolean).join('');
+
+  const icons = [
+    (!inPlayedTab && g.bought) ? `<div class="status-dot bt">💳</div>` : '',
+    (!inPlayedTab && g.played) ? `<div class="status-dot pl">⭐</div>` : '',
+  ].filter(Boolean).join('');
+
+  return `<div class="list-item${isPlayedRow?' played-item':''}" onclick="openDetail('${g.id}')">
+    ${cover}
+    <div class="list-info">
+      <div class="list-name">${esc(g.name)}</div>
+      ${dateHtml}
+      ${tags?`<div class="list-tags">${tags}</div>`:''}
+    </div>
+    <div class="list-icons">${icons}</div>
+  </div>`;
 }
 
-// ── ADD/EDIT SHEET ──
-function openAddSheet() {
-  editingId = null;
-  currentCoverData = null;
-  document.getElementById('addSheetTitle').textContent = '添加游戏';
-  document.getElementById('inputName').value = '';
-  document.getElementById('inputDate').value = '';
-  document.getElementById('deleteGameBtn').style.display = 'none';
-  document.getElementById('saveGameBtn').textContent = '保存游戏';
-  document.getElementById('removeCoverBtn').style.display = 'none';
-  setDateMode('known');
-  setCoverPreview(null);
-  openOverlay('addOverlay');
-}
-
-function openEditSheet(id) {
-  const g = games.find(x=>x.id===id);
-  if (!g) return;
-  editingId = id;
-  currentCoverData = g.cover || null;
-  document.getElementById('addSheetTitle').textContent = '编辑游戏';
-  document.getElementById('inputName').value = g.name;
-  document.getElementById('inputDate').value = g.releaseDate || '';
-  document.getElementById('deleteGameBtn').style.display = 'block';
-  document.getElementById('saveGameBtn').textContent = '保存更改';
-  document.getElementById('removeCoverBtn').style.display = g.cover ? 'block' : 'none';
-  setDateMode(g.tbd ? 'tbd' : 'known');
-  setCoverPreview(g.cover);
-  openOverlay('addOverlay');
-}
-
-function setDateMode(mode) {
-  dateMode = mode;
-  document.getElementById('dateOptKnown').classList.toggle('active', mode==='known');
-  document.getElementById('dateOptTBD').classList.toggle('active', mode==='tbd');
-  document.getElementById('inputDate').style.display = mode==='known' ? 'block' : 'none';
-}
-
-function saveGame() {
-  const name = document.getElementById('inputName').value.trim();
-  if (!name) { showToast('请输入游戏名称'); return; }
-  const tbd = dateMode === 'tbd';
-  const releaseDate = tbd ? null : (document.getElementById('inputDate').value || null);
-  
-  if (editingId) {
-    const idx = games.findIndex(g=>g.id===editingId);
-    if (idx !== -1) {
-      games[idx] = { ...games[idx], name, releaseDate, tbd, cover: currentCoverData };
-    }
-    showToast('已更新 ✓');
-  } else {
-    games.push({ id: uid(), name, releaseDate, tbd, cover: currentCoverData, bought: false, played: false, playedDate: null });
-    showToast('已添加 ✓');
-  }
-  save(); render(); closeOverlay('addOverlay');
-}
-
-function deleteCurrentGame() {
-  if (!editingId) return;
-  if (!confirm('确认删除此游戏？')) return;
-  games = games.filter(g=>g.id!==editingId);
-  save(); render(); closeOverlay('addOverlay'); closeOverlay('detailOverlay');
-  showToast('已删除');
-}
-
-// ── COVER ──
-function handleCoverFile(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    currentCoverData = ev.target.result;
-    setCoverPreview(currentCoverData);
-    document.getElementById('removeCoverBtn').style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-  e.target.value = '';
-}
-
-function promptCoverUrl() {
-  const url = prompt('粘贴图片 URL：');
-  if (url && url.startsWith('http')) {
-    currentCoverData = url;
-    setCoverPreview(url);
-    document.getElementById('removeCoverBtn').style.display = 'block';
-  }
-}
-
-function removeCover() {
-  currentCoverData = null;
-  setCoverPreview(null);
-  document.getElementById('removeCoverBtn').style.display = 'none';
-}
-
-function setCoverPreview(src) {
-  const el = document.getElementById('coverPreview');
-  if (src) {
-    el.innerHTML = `<img src="${src}" style="width:100%;height:100%;object-fit:cover;border-radius:7px">`;
-  } else {
-    el.innerHTML = '🎮';
-  }
-}
-
-// ── DETAIL SHEET ──
+// ─────────────────────────────────────────
+// DETAIL
+// ─────────────────────────────────────────
 function openDetail(id) {
-  const g = games.find(x=>x.id===id);
-  if (!g) return;
-  currentDetailId = id;
-  renderDetailBody(g);
-  openOverlay('detailOverlay');
+  detailId = id;
+  renderDetail();
+  open('ov-detail');
 }
 
-function renderDetailBody(g) {
-  const dateStr = g.tbd ? '待定 TBD' : (g.releaseDate ? formatDate(g.releaseDate) : '—');
+function renderDetail() {
+  const g = games.find(x=>x.id===detailId);
+  if (!g) return;
   const coverHtml = g.cover
-    ? `<img class="detail-cover" src="${g.cover}" onerror="this.parentNode.innerHTML='<div class=detail-cover-ph>🎮</div>'">`
+    ? `<img class="detail-cover-img" src="${esc(g.cover)}">`
     : `<div class="detail-cover-ph">🎮</div>`;
-  
-  let playedDateSection = '';
-  if (g.played) {
-    playedDateSection = `<div class="detail-played-date">
-      <div class="detail-played-date-label">⭐ 游玩日期</div>
-      <input class="form-input" type="date" id="playedDateInput" value="${g.playedDate || today()}" onchange="updatePlayedDate('${g.id}', this.value)">
-    </div>`;
-  }
-  
-  document.getElementById('detailBody').innerHTML = `
+  const playedBox = g.played ? `<div class="played-date-box">
+    <div class="played-date-lbl">⭐ 游玩日期</div>
+    <input class="finput" type="date" value="${g.playedDate||today()}" onchange="setPlayedDate(this.value)">
+  </div>` : '';
+  document.getElementById('detail-body').innerHTML = `
     ${coverHtml}
-    <div class="detail-title">${escHtml(g.name)}</div>
-    <div class="detail-date">🗓 ${dateStr}</div>
-    <div class="detail-actions">
-      <div class="detail-action${g.bought?' bought-active':''}" onclick="toggleStatus('${g.id}','bought')">
-        <div class="detail-action-icon">💳</div>
+    <div class="detail-title">${esc(g.name)}</div>
+    <div class="detail-date">🗓 ${fmtRelease(g)}</div>
+    <div class="detail-acts">
+      <div class="detail-act${g.bought?' bt-on':''}" onclick="toggleStatus('bought')">
+        <div class="detail-act-icon">💳</div>
         <div>${g.bought?'已购买':'标记购买'}</div>
       </div>
-      <div class="detail-action${g.played?' played-active':''}" onclick="toggleStatus('${g.id}','played')">
-        <div class="detail-action-icon">⭐</div>
+      <div class="detail-act${g.played?' pl-on':''}" onclick="toggleStatus('played')">
+        <div class="detail-act-icon">⭐</div>
         <div>${g.played?'已游玩':'标记游玩'}</div>
       </div>
     </div>
-    ${playedDateSection}
-  `;
+    ${playedBox}`;
 }
 
-function toggleStatus(id, field) {
+function toggleStatus(field) {
+  const idx = games.findIndex(g=>g.id===detailId);
+  if (idx<0) return;
+  games[idx][field] = !games[idx][field];
+  if (field==='played' && games[idx].played && !games[idx].playedDate) games[idx].playedDate = today();
+  if (field==='played' && !games[idx].played) games[idx].playedDate = null;
+  save(); render(); renderDetail();
+  showToast(games[idx][field] ? '已标记 ✓' : '已取消');
+}
+
+function setPlayedDate(val) {
+  const idx = games.findIndex(g=>g.id===detailId);
+  if (idx>=0) { games[idx].playedDate=val; save(); render(); }
+}
+
+function editFromDetail() {
+  close('ov-detail');
+  setTimeout(() => openEdit(detailId), 180);
+}
+
+// ─────────────────────────────────────────
+// ADD / EDIT FORM
+// ─────────────────────────────────────────
+function openAdd() {
+  editId = null;
+  coverData = null;
+  document.getElementById('add-title').textContent = '添加游戏';
+  document.getElementById('save-btn').textContent = '保存游戏';
+  document.getElementById('f-name').value = '';
+  document.getElementById('del-btn').style.display = 'none';
+  setCoverPreview(null);
+  setPrec('exact');
+  open('ov-add');
+}
+
+function openEdit(id) {
   const g = games.find(x=>x.id===id);
   if (!g) return;
-  g[field] = !g[field];
-  if (field === 'played' && g.played && !g.playedDate) g.playedDate = today();
-  if (field === 'played' && !g.played) g.playedDate = null;
-  save(); render(); renderDetailBody(g);
-  showToast(g[field] ? `已标记${field==='bought'?'购买':'游玩'} ✓` : `已取消标记`);
+  editId = id;
+  coverData = g.cover || null;
+  document.getElementById('add-title').textContent = '编辑游戏';
+  document.getElementById('save-btn').textContent = '保存更改';
+  document.getElementById('f-name').value = g.name;
+  document.getElementById('del-btn').style.display = 'block';
+  setCoverPreview(g.cover);
+  setPrec(g.releasePrecision||'exact');
+  setTimeout(() => fillDateFields(g), 10);
+  open('ov-add');
 }
 
-function updatePlayedDate(id, val) {
-  const g = games.find(x=>x.id===id);
-  if (g) { g.playedDate = val; save(); render(); }
+function fillDateFields(g) {
+  const p = g.releasePrecision || 'exact';
+  const d = g.releaseDate || '';
+  if (p==='exact') { const el=document.getElementById('f-exact'); if(el) el.value=d; }
+  else if (p==='month') {
+    const [y,m]=d.split('-');
+    const ey=document.getElementById('f-my'); const em=document.getElementById('f-mm');
+    if(ey) ey.value=y; if(em) em.value=m;
+  }
+  else if (p==='quarter') {
+    const [y,q]=d.split('-');
+    const ey=document.getElementById('f-qy'); const eq=document.getElementById('f-qq');
+    if(ey) ey.value=y; if(eq) eq.value=q;
+  }
+  else if (p==='year') { const el=document.getElementById('f-year'); if(el) el.value=d; }
 }
 
-function editCurrentGame() {
-  closeOverlay('detailOverlay');
-  setTimeout(() => openEditSheet(currentDetailId), 200);
+// DATE PRECISION
+function setPrec(p) {
+  prec = p;
+  ['exact','month','quarter','year','tbd','unknown'].forEach(k => {
+    document.getElementById('dp-'+k).classList.toggle('on', k===p);
+  });
+  const container = document.getElementById('date-fields');
+  const thisYear = new Date().getFullYear();
+  const yearOpts = Array.from({length:12},(_,i)=>thisYear-1+i).map(y=>`<option value="${y}">${y}</option>`).join('');
+  const monthOpts = Array.from({length:12},(_,i)=>i+1).map(m=>`<option value="${String(m).padStart(2,'0')}">${m} 月</option>`).join('');
+  const quarterOpts = ['Q1 (1–3月)','Q2 (4–6月)','Q3 (7–9月)','Q4 (10–12月)'].map((l,i)=>`<option value="Q${i+1}">${l}</option>`).join('');
+  if (p==='exact') {
+    container.innerHTML = `<input class="finput" id="f-exact" type="date">`;
+  } else if (p==='month') {
+    container.innerHTML = `<div class="date-row">
+      <select class="finput" id="f-my">${yearOpts}</select>
+      <select class="finput" id="f-mm">${monthOpts}</select>
+    </div>`;
+  } else if (p==='quarter') {
+    container.innerHTML = `<div class="date-row">
+      <select class="finput" id="f-qy">${yearOpts}</select>
+      <select class="finput" id="f-qq">${quarterOpts}</select>
+    </div>`;
+  } else if (p==='year') {
+    container.innerHTML = `<select class="finput" id="f-year">${yearOpts}</select>`;
+  } else {
+    container.innerHTML = '';
+  }
 }
 
-// ── IO ──
-function openIO() { openOverlay('ioOverlay'); }
-
-function exportData() {
-  const blob = new Blob([JSON.stringify({version:1, games}, null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = `gamelog_${today()}.json`; a.click();
-  URL.revokeObjectURL(url);
-  showToast('已导出 JSON ✓');
+function getDateValue() {
+  if (prec==='exact') return document.getElementById('f-exact')?.value || null;
+  if (prec==='month') {
+    const y=document.getElementById('f-my')?.value;
+    const m=document.getElementById('f-mm')?.value;
+    return (y&&m) ? `${y}-${m}` : null;
+  }
+  if (prec==='quarter') {
+    const y=document.getElementById('f-qy')?.value;
+    const q=document.getElementById('f-qq')?.value;
+    return (y&&q) ? `${y}-${q}` : null;
+  }
+  if (prec==='year') return document.getElementById('f-year')?.value || null;
+  if (prec==='tbd') return 'tbd';
+  if (prec==='unknown') return 'unknown';
+  return null;
 }
 
-function importData(e) {
-  const file = e.target.files[0];
-  if (!file) return;
+function saveGame() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { showToast('请输入游戏名称'); return; }
+  const releaseDate = getDateValue();
+  const releasePrecision = prec;
+  if (editId) {
+    const idx = games.findIndex(g=>g.id===editId);
+    if (idx>=0) games[idx] = {...games[idx], name, releaseDate, releasePrecision, cover: coverData};
+    showToast('已更新 ✓');
+  } else {
+    games.push({id:uid(), name, releaseDate, releasePrecision, cover:coverData, bought:false, played:false, playedDate:null});
+    showToast('已添加 ✓');
+  }
+  save(); render(); close('ov-add');
+}
+
+function deleteGame() {
+  if (!editId) return;
+  if (!confirm('确认删除此游戏？')) return;
+  games = games.filter(g=>g.id!==editId);
+  save(); render(); close('ov-add'); close('ov-detail');
+  showToast('已删除');
+}
+
+// ─────────────────────────────────────────
+// COVER
+// ─────────────────────────────────────────
+function handleFile(e) {
+  const file = e.target.files[0]; if(!file) return;
   const reader = new FileReader();
-  reader.onload = ev => {
+  reader.onload = ev => { coverData=ev.target.result; setCoverPreview(coverData); };
+  reader.readAsDataURL(file);
+  e.target.value='';
+}
+function pickUrl() {
+  const url = prompt('粘贴图片 URL：');
+  if (url && url.startsWith('http')) { coverData=url; setCoverPreview(url); }
+}
+function rmCover() { coverData=null; setCoverPreview(null); }
+function setCoverPreview(src) {
+  const el = document.getElementById('cover-prev');
+  const rm = document.getElementById('cover-rm');
+  el.innerHTML = src ? `<img src="${esc(src)}">` : '🎮';
+  rm.style.display = src ? 'block' : 'none';
+}
+
+// ─────────────────────────────────────────
+// IO
+// ─────────────────────────────────────────
+function openIO() { open('ov-io'); }
+function exportData() {
+  const blob = new Blob([JSON.stringify({version:2,games},null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=`gamelog_${today()}.json`; a.click();
+  URL.revokeObjectURL(url); showToast('已导出 ✓');
+}
+function importData(e) {
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
     try {
-      const data = JSON.parse(ev.target.result);
-      const imported = data.games || data;
-      if (!Array.isArray(imported)) throw new Error();
-      const existingIds = new Set(games.map(g=>g.id));
-      let added = 0;
-      imported.forEach(g => {
-        if (!existingIds.has(g.id)) { games.push(g); added++; }
-      });
-      save(); render(); closeOverlay('ioOverlay');
-      showToast(`已导入 ${added} 条新记录 ✓`);
-    } catch(err) { showToast('导入失败，文件格式错误'); }
+      const data=JSON.parse(ev.target.result);
+      const imported=data.games||data;
+      if(!Array.isArray(imported)) throw new Error();
+      const ids=new Set(games.map(g=>g.id));
+      let added=0;
+      imported.forEach(g=>{ if(!ids.has(g.id)){games.push(g);added++;} });
+      save(); render(); close('ov-io'); showToast(`已导入 ${added} 条 ✓`);
+    } catch(err){ showToast('导入失败，格式错误'); }
   };
-  reader.readAsText(file);
-  e.target.value = '';
+  reader.readAsText(file); e.target.value='';
+}
+function clearAll() {
+  if (!confirm('确认清空所有数据？不可恢复！')) return;
+  games=[]; save(); render(); close('ov-io'); showToast('已清空');
 }
 
-function clearAllData() {
-  if (!confirm('确认清空所有游戏数据？此操作不可恢复！')) return;
-  games = []; save(); render(); closeOverlay('ioOverlay');
-  showToast('数据已清空');
-}
+// ─────────────────────────────────────────
+// OVERLAY
+// ─────────────────────────────────────────
+function open(id) { document.getElementById(id).classList.add('open'); }
+function close(id) { document.getElementById(id).classList.remove('open'); }
+function bgClose(e,id) { if(e.target===document.getElementById(id)) close(id); }
 
-// ── OVERLAY HELPERS ──
-function openOverlay(id) { document.getElementById(id).classList.add('open'); }
-function closeOverlay(id) { document.getElementById(id).classList.remove('open'); }
-function handleOverlayClick(e, id) { if (e.target === document.getElementById(id)) closeOverlay(id); }
-
-// ── TOAST ──
+// ─────────────────────────────────────────
+// TOAST
+// ─────────────────────────────────────────
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
 }
 
-// ── UTILS ──
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
-function today() { return new Date().toISOString().slice(0,10); }
-function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function formatDate(s) {
-  if (!s) return '';
-  const d = new Date(s + 'T00:00:00');
-  return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
-}
-function formatYearMonth(s) {
-  const [y,m] = s.split('-');
-  return `${y}年${parseInt(m)}月`;
+// ─────────────────────────────────────────
+// EMPTY STATE
+// ─────────────────────────────────────────
+function emptyHtml(icon,title,desc) {
+  return `<div class="empty"><div class="empty-icon">${icon}</div><div class="empty-title">${title}</div><div class="empty-desc">${desc}</div></div>`;
 }
 </script>
 </body>
